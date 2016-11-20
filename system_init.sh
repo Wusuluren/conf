@@ -10,8 +10,8 @@ git clone git://github.com/wusuluren/conf.git
 # zsh & oh-my-zah
 sudo apt-get install zsh
 wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | sh
-cp /etc/passwd ~/.bakup
-sed -i '$s/bin\/bash/usr\/bin\/zsh/g' /etc/passwd
+sudo cp /etc/passwd ~/.bakup
+sudo sed -i '$s/bin\/bash/usr\/bin\/zsh/g' /etc/passwd
 
 cat ./conf/.zshrc >> ~/.zshrc
 
