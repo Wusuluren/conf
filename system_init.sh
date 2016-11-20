@@ -1,5 +1,17 @@
 #!/bin/sh
 
+#usage:
+#
+#do this:
+#wget https://github.com/Wusuluren/conf/blob/master/system_init.sh
+#bash system_init.sh
+#
+#or this:
+#git clone git@github.com:wusuluren/conf.git
+#bash ./conf/system_init.sh -no-clone
+
+
+
 BAKUP_DIR='~/.bakup'
 
 # bakup
@@ -15,7 +27,10 @@ git config --global user.name post
 git config --global user.email weixiaoyiri@gmail.com
 git config --global core.editor vim
 
-git clone git@github.com:wusuluren/conf.git
+if [ "-no-clone" != "$1" ]
+then
+    git clone git@github.com:wusuluren/conf.git
+fi
 
 
 # zsh & oh-my-zah
