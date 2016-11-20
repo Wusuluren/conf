@@ -24,3 +24,12 @@ cat ./conf/.vimrc >> ~/.vimrc
 sudo apt-get install tmux
 touch ~/.tmux.conf
 cat ./conf/.tmux.conf >> ~/.tmux.conf
+
+# python
+sudo apt-get install python-pip
+pip install virtualenv
+virtualenv --no-site-packages ~/pytest
+
+sudo apt-get install python-pip3
+pip3 install virtualenv
+virtualenv --no-site-packages ~/py3test
