@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+
+home="/home/post/.safe_rm"
+
+# safe rm
+srm() {
+    if [ $# = 0 ];then
+       return
+    fi
+    let size=`du -sm $home | tail -n 1 | cut -f1`
+    if [ $size -gt 1024 ];then
+        rm $home/*
+    fi
+	cd $PWD
+    for file in $@;do
+	if [ ! -e $file ];then
+		echo "$file not exist"
+		return -1
+	fi
+    done
+    for file in $@;do
+        mv $file $home
+    done
+}
+
+srm_clear() {
+	cd $home
+	for file in `ls`;do
+		if [ -d $file ];then
+			rm -r $file
+		else
+			rm $file
+		fi
+	done
+}
+
+srm_ls() {
+    $@ $home
+}
+
+srm_init() {
+	if [ ! -d $home ];then
+		mkdir $home
+	fi
+}
+
+srm_help() {
+cat << HELP
+Usage: srm [OPTION]... [FILE]...
+Safety remove files.
+The options is as following:
+  init	init
+  ls	ls
+  clear	clear
+HELP
+}
+
+main() {
+	srm_init
+	if [ "$1" = "clear" ];then
+		srm_clear
+    elif [ "$1" = "ls" ];then
+        srm_ls $@
+    elif [ "$1" = "init" ];then
+        srm_init
+    elif [ "$1" = "help" ];then
+        srm_help
+    else
+        srm $@
+	fi
+}
+
+main $@
