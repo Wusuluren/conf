@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-home="/home/post/.safe_rm"
+home="$HOME/.safe_rm"
 
 # safe rm
 srm() {

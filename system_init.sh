@@ -70,8 +70,9 @@ if [ ! -e $punch_in_dir ];then
 fi
 
 # srm
-run_sudo chmod a+x ./srm
-run_sudo cp ./srm /bin/srm
+run_sudo wget "$conf_url/srm" -O "/bin/srm"
+run_sudo chmod a+x /bin/srm
+# run_sudo cp ./srm /bin/srm
 srm init
 
 # wiznote
