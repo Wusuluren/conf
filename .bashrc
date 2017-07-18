@@ -14,7 +14,7 @@ bright() {
     cat << HELP
       usage: bright N(default)
         N   0-15
-    HELP
+HELP
     return -1
   fi
   if [ "$1" = "default" ];then
