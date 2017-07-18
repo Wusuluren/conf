@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-#usage: wget https://raw.githubusercontent.com/Wusuluren/conf/master/system_init.sh -q -O- | sh
+#usage: wget https://raw.githubusercontent.com/Wusuluren/conf/master/system_init.sh  && bash system_init.sh
 
 home=$HOME
 NO_CLONE="$1"
