@@ -7,11 +7,6 @@ hexo_remote() {
   hexo clean && hexo g && hexo d && hexo clean
 }
 
-run_sudo() {
-	echo "$passwd" | sudo -S $@
-	test $? != 0 &&	echo "sudo failed: $@"
-}
-
 export PATH=$PATH:/usr/local/go/bin
 export GOPATH="$HOME/go"
 
