@@ -74,12 +74,16 @@ if [ ! -e "/bin/srm" ];then
     run_sudo wget "$conf_url/srm" -O "/bin/srm"
     run_sudo chmod a+x /bin/srm
     srm init
+else
+    echo "failed to install srm: file exists"
 fi
 
-# srm
+# tmpsh
 if [ ! -e "/bin/tmpsh" ];then
     run_sudo wget "$conf_url/tmpsh" -O "/bin/tmpsh"
     run_sudo chmod a+x /bin/tmpsh
+else
+    echo "failed to install tmpsh: file exists"
 fi
 
 # docker(on Ubuntu 16.04 LTS)
