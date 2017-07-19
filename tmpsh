@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+stty erase ^H
+ret=$?
+while [ true ];do
+    if [ "$ret" != 0 ];then
+        echo -ne "\033[31m $USER@HOST:$PWD \033[0m"
+    else
+        echo -ne "\033[32m $USER@HOST:$PWD \033[0m"
+    fi
+    read cmd
+    bash -c "$cmd"
+    ret=$?
+done

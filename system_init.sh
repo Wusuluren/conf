@@ -50,7 +50,7 @@ git config --global user.email weixiaoyiri@gmail.com
 
 # config file
 conf_url="https://raw.githubusercontent.com/Wusuluren/conf/master"
-conf_files=('.bashrc' '.zshrc' '.vimrc' '.tmux.conf')
+conf_files=('.zshrc' '.vimrc' '.tmux.conf')
 for conf_file in ${conf_files[*]};do
 	if [ -e "$sys_bak/$conf_file" ];then
 		cp "$sys_bak/$conf_file" "$home/$conf_file"
@@ -70,15 +70,19 @@ if [ ! -e $punch_in_dir ];then
 fi
 
 # srm
-run_sudo wget "$conf_url/srm" -O "/bin/srm"
-run_sudo chmod a+x /bin/srm
-# run_sudo cp ./srm /bin/srm
-srm init
+if [ ! -e "/bin/srm" ];then
+    run_sudo wget "$conf_url/srm" -O "/bin/srm"
+    run_sudo chmod a+x /bin/srm
+    srm init
+fi
 
-# wiznote
-#sudo add-apt-repository ppa:wiznote-team
-#sudo apt-get -y install wiznote
+# srm
+if [ ! -e "/bin/tmpsh" ];then
+    run_sudo wget "$conf_url/tmpsh" -O "/bin/tmpsh"
+    run_sudo chmod a+x /bin/tmpsh
+fi
 
+# docker(on Ubuntu 16.04 LTS)
 # docker(on Ubuntu 16.04 LTS)
 #sudo apt-get -y install linux-image-extra-$(uname -r) linux-image-extra-virtual
 #sudo apt-get update
