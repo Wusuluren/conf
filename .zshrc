@@ -1,9 +1,15 @@
+
 ################################################################################
 hexo_local() {
   hexo clean && hexo g && hexo s
 }
 hexo_remote() {
   hexo clean && hexo g && hexo d && hexo clean
+}
+
+run_sudo() {
+	echo "$passwd" | sudo -S $@
+	test $? != 0 &&	echo "sudo failed: $@"
 }
 
 export PATH=$PATH:/usr/local/go/bin
