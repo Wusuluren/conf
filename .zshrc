@@ -19,8 +19,8 @@ HELP
     return -1
   fi
   if [ "$1" = "default" ];then
-  	echo 13 > /sys/class/backlight/acpi_video0/brightness
+  	echo "echo 13 > /sys/class/backlight/acpi_video0/brightness"
   else
-    echo "$1" > /sys/class/backlight/acpi_video0/brightness
+    echo "echo $1 > /sys/class/backlight/acpi_video0/brightness"
   fi
 }
