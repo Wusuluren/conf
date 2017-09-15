@@ -19,7 +19,8 @@ srm() {
 	fi
     done
     for file in $@;do
-        mv $file $home
+        ts=`date +%s`
+        mv $file $home/$file'_'$ts
     done
 }
 
