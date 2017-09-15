@@ -1,47 +1,58 @@
 #!/usr/bin/env bash
 
-home="$HOME/.safe_rm"
+trash_dir="/home/post/.safe_rm"
 
-# safe rm
 srm() {
-    if [ $# = 0 ];then
-       return
-    fi
-    let size=`du -sm $home | tail -n 1 | cut -f1`
-    if [ $size -gt 1024 ];then
-        rm $home/*
+    if [ $# == 2 ];then
+        opt=$1
+        files=$2
+    else
+        opt=''
+        files=$1
     fi
 	cd $PWD
-    for file in $@;do
-	if [ ! -e $file ];then
-		echo "$file not exist"
-		return -1
-	fi
-    done
-    for file in $@;do
-        ts=`date +%s`
-        mv $file $home/$file'_'$ts
+        let free_size=`df / | tail -n 1 | awk '{print($4)}'`
+    let trash_size=`du -sm $trash_dir | tail -n 1 | cut -f1`
+    if [ $trash_size -gt 1024 ];then
+            echo -n 'trash file too large, DELETE it?(y/n): ' && read confirm
+            test $confirm == 'y' && rm -rf "$trash_dir/*"
+    fi
+    for file in $files;do
+        if [ -d $file ];then
+            let file_size=`du -s $file | tail -n 1 | cut -f1`
+        else
+            let file_size=`ls -l $file | awk '{print($5)}'`
+        fi
+        if [ $file_size -ge $free_size ];then
+            echo -n 'file too large, DELETE it?(y/n): ' && read confirm
+            test $confirm == 'y' && rm -rf "$file"
+            continue
+        fi
+        if [ ! -e $file ];then
+            echo "$file not exist"
+        else
+            ts=`date +%s`
+            mv $opt $file $trash_dir/$file'_'$ts
+        fi
     done
 }
 
 srm_clear() {
-	cd $home
+	opt=$@	
+	cd $trash_dir
 	for file in `ls`;do
-		if [ -d $file ];then
-			rm -r $file
-		else
-			rm $file
-		fi
-	done
+		rm $opt $file
+	done 
 }
 
 srm_ls() {
-    $@ $home
+	opt=$@
+	ls $opt $trash_dir
 }
 
 srm_init() {
-	if [ ! -d $home ];then
-		mkdir $home
+	if [ ! -d $trash_dir ];then
+		mkdir -p $trash_dir
 	fi
 }
 
@@ -57,17 +68,41 @@ HELP
 }
 
 main() {
+    cmds=('init' 'ls' 'clear' 'help' '-h')
+        if [[ "${cmds[*]}" =~ "$1" ]];then
+            para=($@)
+            cmd=${para[0]}
+            para=${para[@]:1:$#}
+        else
+            para=($@)
+            cmd=''
+        fi
+	opts=()
+	file=()
+	for i in ${para[@]};do
+	    prefix=${i:0:1}
+	    if [ $prefix == '-' ];then
+		opts[${#opt[@]}]=$i
+	    else
+		file[${#file[@]}]=$i
+	    fi
+	done
+    opt=''
+    for i in ${opts[*]};do
+        opt += $i' '
+    done
+
 	srm_init
-	if [ "$1" = "clear" ];then
-		srm_clear
-    elif [ "$1" = "ls" ];then
-        srm_ls $@
-    elif [ "$1" = "init" ];then
+		if [ "$cmd" = "clear" ];then
+		srm_clear $opt
+    elif [ "$cmd" = "ls" ];then
+        srm_ls $opt
+    elif [ "$cmd" = "init" ];then
         srm_init
-    elif [ "$1" = "help" ];then
+    elif [ "$cmd" = "help" ];then
         srm_help
     else
-        srm $@
+        srm $opt $file
 	fi
 }
 
