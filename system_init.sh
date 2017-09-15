@@ -60,6 +60,9 @@ for conf_file in ${conf_files[*]};do
 	wget "$conf_url/$conf_file" -q -O- >> "$home/$conf_file"
 done
 
+# .zshrc
+echo "alias rsudo='echo $passwd | sudo -S '" >> ~/.zshrc
+
 # daily punch in
 punch_in_dir="$home/.punch_in"
 if [ ! -e $punch_in_dir ];then
