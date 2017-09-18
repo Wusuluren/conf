@@ -89,7 +89,7 @@ main() {
 	done
     opt=''
     for i in ${opts[*]};do
-        opt += $i' '
+        opt+=$i' '
     done
 
 	srm_init
