@@ -6,41 +6,40 @@ macro MultiLineComment()
 	hbuf = GetCurrentBuf()
 
 	if(GetBufLine(hbuf, 0) == "//magic-number:tph85666031") {
-        stop
-    }
+			stop
+	}
 
-    //find do comment or uncomment
-    doComment = True
-    Ln = LnFirst
+   	//find do comment or uncomment
+   	doComment = True
+   	Ln = LnFirst
 	while (Ln <= LnLast) {
 		buf = GetBufLine(hbuf, Ln)
-    	len = StrLen(buf)
-    	if (len == 0) {
-    		Ln = Ln + 1
-    		continue
-    	}
-    	idx = 0
-    	while (idx < len) {
-    		ch = StrMid(buf, idx, idx+1)
-    		if ((ch != "\t") && (ch != " ")) {
-    			break
-    		}
+   		len = StrLen(buf)
+   		if (len == 0) {
+   			Ln = Ln + 1
+   			continue
+   		}
+   		idx = 0
+   		while (idx < len) {
+   			ch = StrMid(buf, idx, idx+1)
+   			if ((ch != "\t") && (ch != " ")) {
+   				break
+   			}
 		    idx = idx + 1
-    	}
-    	if (idx+2 <= len) {
+   		}
+   		if (idx+2 <= len) {
 	    	if (StrMid(buf, idx, idx+1) == "/") {
 			    idx = idx + 1
 	    		if (StrMid(buf, idx, idx+1) == "/") {
 	    			doComment = False
 	    		}
 	    	}
-    	} 
-    	if (!doComment) {
-    		break
-    	}
+   		} 
+   		if (!doComment) {
+   			break
+   		}
    		Ln = Ln + 1
-    }
-
+   	}	
 	if (doComment) {
 		//step 1
 		commentBeginIdx = 10000
@@ -68,8 +67,7 @@ macro MultiLineComment()
 			    idx = idx + 1
 	    	}    	
 	   		Ln = Ln + 1
-		}
-
+		}	
 		//step 2
 	    Ln = LnFirst
 	    while (Ln <= LnLast) {
@@ -108,9 +106,8 @@ macro MultiLineComment()
 	    	}
 	    	Ln = Ln + 1
 	    }
-	}
-
-    if (LnLast+1 < GetBufLineCount(hbuf)) {
-    	SetBufIns(hbuf, LnLast+1, 0)
-    }
+	}	
+   	if (LnLast+1 < GetBufLineCount(hbuf)) {
+   		SetBufIns(hbuf, LnLast+1, 0)
+   	}
 }
