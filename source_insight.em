@@ -1,10 +1,9 @@
-
 macro Hwave_getBlankIdx(str)
 {
 	len = StrLen(str)
 	idx = 0
 	while (idx < len) {
-	    ch = StrMid(str, idx, idx+1)
+	    ch = str[idx]
 	    if ((ch != "\t") && (ch != " ")) {
 	    	break
 	    }
@@ -19,11 +18,11 @@ macro Hwave_getBlankPrefix(str)
 	idx = 0
 	prefix = ""
 	while (idx < len) {
-	    ch = StrMid(str, idx, idx+1)
-	    if ((ch != "\t") && (ch != " ")) {
+	    ch = str[idx]
+	    if ((ch != "\t") && (ch != " ")) {	 
+		    prefix = StrMid(str, 0, idx)
 	    	break
 	    }
-		prefix = Cat(prefix, ch)
 		idx = idx + 1
 	}	 
 	return prefix
@@ -35,11 +34,11 @@ macro Hwave_getBlankRecord(str)
 	idx = 0
 	prefix = ""
 	while (idx < len) {
-	    ch = StrMid(str, idx, idx+1)
+	    ch = str[idx]
 	    if ((ch != "\t") && (ch != " ")) {
+		    prefix = StrMid(str, 0, idx)
 	    	break
 	    }
-		prefix = Cat(prefix, ch)
 		idx = idx + 1
 	}	 
 	record = nil
