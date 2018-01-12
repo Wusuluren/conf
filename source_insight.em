@@ -74,11 +74,8 @@ macro Hwave_MultiLineComment()
 	    	if (StrMid(buf, idx, idx+2) == "//") {
 	    		doComment = False
 	    	}
-    	} 
-    	if (!doComment) {
-    		break
     	}
-   		Ln = Ln + 1
+    		break
     }
 
 	if (doComment) {
