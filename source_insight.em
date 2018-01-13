@@ -1,4 +1,4 @@
-macro Hwave_getBlankIdx(str)
+macro _Hwave_getBlankIdx(str)
 {
 	len = StrLen(str)
 	idx = 0
@@ -12,7 +12,7 @@ macro Hwave_getBlankIdx(str)
 	return idx
 }
 
-macro Hwave_getBlankPrefix(str)
+macro _Hwave_getBlankPrefix(str)
 {
 	len = StrLen(str)
 	idx = 0
@@ -28,7 +28,7 @@ macro Hwave_getBlankPrefix(str)
 	return prefix
 }
 
-macro Hwave_getBlankRecord(str)
+macro _Hwave_getBlankRecord(str)
 {
 	len = StrLen(str)
 	idx = 0
@@ -69,13 +69,13 @@ macro Hwave_MultiLineComment()
     		Ln = Ln + 1
     		continue
     	}
-		idx = Hwave_getBlankIdx(buf)	
+		idx = _Hwave_getBlankIdx(buf)	
     	if (idx+2 <= len) {
 	    	if (StrMid(buf, idx, idx+2) == "//") {
 	    		doComment = False
 	    	}
-    	}
-    		break
+    	} 
+    	break
     }
 
 	if (doComment) {
@@ -90,7 +90,7 @@ macro Hwave_MultiLineComment()
 	    		Ln = Ln + 1
 	    		continue
 	    	}
-			record = Hwave_getBlankRecord(buf)
+			record = _Hwave_getBlankRecord(buf)
 			prefix = record.prefix
 			idx = record.idx	
 			if (idx < commentBeginIdx) {
@@ -117,7 +117,7 @@ macro Hwave_MultiLineComment()
 	    while (Ln <= LnLast) {
 	    	buf = GetBufLine(hbuf, Ln)
 	    	len = StrLen(buf)
-			record = Hwave_getBlankRecord(buf)
+			record = _Hwave_getBlankRecord(buf)
 			prefix = record.prefix
 			idx = record.idx	
 	    	if (idx+2 <= len) {
@@ -135,7 +135,7 @@ macro Hwave_MultiLineComment()
 }
 
 
-//Key Assignments: Ctrl + Tab
+//Key Assignments: Ctrl + q
 macro Hwave_TemplteSnippets()
 {
 	hwnd = GetCurrentWnd()
@@ -159,7 +159,7 @@ macro Hwave_TemplteSnippets()
 	if (idx < 2) {
 		stop
 	}
-	record = Hwave_getBlankRecord(buf)
+	record = _Hwave_getBlankRecord(buf)
 	prefix = record.prefix
 	keyWordLen = idx - record.idx
 
@@ -169,6 +169,16 @@ macro Hwave_TemplteSnippets()
 			PutBufLine(hbuf, Ln, Cat(StrMid(buf, 0, ColFirst), " {"))
 			InsBufLine(hbuf, Ln+1, Cat(Cat(prefix, "};"), StrMid(buf, ColFirst, len)))	
 			SetBufIns(hbuf, Ln, idx)
+			stop
+		} else if (ch == "switch") {
+			PutBufLine(hbuf, Ln, Cat(StrMid(buf, 0, ColFirst), " ()"))
+			InsBufLine(hbuf, Ln+1, Cat(prefix, "{"))
+			InsBufLine(hbuf, Ln+2, Cat(prefix, "\tcase:"))
+			InsBufLine(hbuf, Ln+3, Cat(prefix, "\t\tbreak;"))
+			InsBufLine(hbuf, Ln+4, Cat(prefix, "\tdefault:"))
+			InsBufLine(hbuf, Ln+5, Cat(prefix, "\t\tbreak;"))
+			InsBufLine(hbuf, Ln+6, Cat(Cat(prefix, "}"), StrMid(buf, ColFirst, len)))	
+			SetBufIns(hbuf, Ln, idx+2)
 			stop
 		}
 	}
