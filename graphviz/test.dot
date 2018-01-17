@@ -1,0 +1,31 @@
+
+digraph G {
+	rankdir=LR
+	edge [fontname="Microsoft YaHei"]
+	node [shape=record, fontname="Microsoft YaHei"]	
+    main
+		subgraph cluster_main {
+		label=main
+		func1;
+		func2;
+		func3;
+	}
+	subgraph cluster_func1 {
+		label=func1
+		func11;
+	}
+	subgraph cluster_func2 {
+		label=func2
+		func22;
+	}
+	subgraph cluster_func3 {
+		label=func3
+		func33;
+	}
+	
+    	main -> func1 [label="mainFunc"]
+	func1 -> func11 [label="func1"]
+	func2 -> func22 [label="func2"]
+	func3 -> func33 [label="func3"]
+
+}
