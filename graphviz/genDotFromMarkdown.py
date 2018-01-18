@@ -1,26 +1,22 @@
 #coding=utf-8
-
 import os,sys
 import codecs
 
-input_file_name = 'test.md'
-dot_file_name = 'test.dot'
-output_file_name = 'test.jpg'
-# dot_cmd = "d:\Program Files (x86)\Graphviz2.38\bin\dot.exe -Tjpg %s -o %s" % (dot_file_name, output_file_name) 
-dot_cmd = "dot.exe -Tjpg %s -o %s" % (dot_file_name, output_file_name) 
+g_input_file_name = ''
+g_dot_file_name = ''
+g_output_file_name = ''
 g_tab_stack = []
 g_func_list = []
 g_cur_func_stack = []
-
-
-dot_template = '''
+g_all_func = {}
+g_dot_template = '''
 digraph G {
 	rankdir=LR
 	edge [fontname="Microsoft YaHei"]
 	node [shape=record, fontname="Microsoft YaHei"]	
     %s
-	%s	
-    %s
+%s	
+%s
 }
 '''
 
@@ -40,7 +36,7 @@ def getTabNum(line):
     return num
 
 
-def generateNode(funcBody: FuncBody):
+def generateDotNode(funcBody: FuncBody):
     strArry = []
     strArry.append('\tsubgraph cluster_%s {' % funcBody.name)
     strArry.append('\t\tlabel=%s' % funcBody.name)
@@ -50,116 +46,111 @@ def generateNode(funcBody: FuncBody):
     return '\n'.join(strArry)
 
 
-def generateEdge(funcBody: FuncBody):
+def generateDotEdge(funcBody: FuncBody):
     str = '\t%s -> %s [label=\"%s\"]\n' % (funcBody.name, funcBody.func_list[0].name, funcBody.annotate)
     return str
 
 
-def printFunc(funcBody: FuncBody):
-    print(funcBody.name, funcBody.annotate, len(funcBody.func_list))
+def getFuncBodyFromStr(line):
+    item = line.split(':')
+    if len(item) == 1:
+        item = line.split('：')
+    name = item[0].strip(' \n\t')
+    if len(item) > 1:
+        annotate = item[1].strip(' \n\t')
+    else:
+        annotate = ''
+    if name in g_all_func:
+        g_all_func[name] += 1
+        name = '%s__%d' % (name, g_all_func[name])
+    else:
+        g_all_func[name] = 0    
+    func_body = FuncBody(name=name, annotate=annotate)
+    return func_body
+
+
+def printFunc(funcBody: FuncBody, tab=0):
+    print('\t'*tab, funcBody.name, funcBody.annotate, len(funcBody.func_list))
     for func in funcBody.func_list:
-        printFunc(func)
+        printFunc(func, tab=tab+1)
+
 
 def printFuncList():
-    printFunc(g_func_list[0])
+    printFunc(g_func_list[0], tab=0)
 
 
-def main():
+def genDotStrFromFuncList(genDotStrFunc):
+    dot_str = ''
+    func_list = [g_func_list[0]]
+    while len(func_list) > 0:
+        func_body = func_list[0]
+        func_list = func_list[1:]
+        dot_str += genDotStrFunc(func_body)
+        for func in func_body.func_list:
+            if len(func.func_list) > 0:
+                func_list.append(func)
+    return dot_str
+
+
+def genDotFromMarkdown():
     g_tab_stack.append(0)
-    with open(input_file_name) as f:
+    with open(g_input_file_name) as f:
         lines = f.readlines()
         lineNum = 0
         while lineNum < len(lines):
             line = lines[lineNum]
-            # lineNum += 1
 
-            if line[0] == '#':
-                item = line[1:].split(':')
-                if len(item) == 1:
-                    item = line[1:].split('：')
-                name = item[0].strip(' \n\t')
-                if len(item) > 1:
-                    annotate = item[1].strip(' \n\t')
-                else:
-                    annotate = ''
-                func_body = FuncBody(name=name, annotate=annotate)
+            if line[0] == '#':  # entry point
+                func_body = getFuncBodyFromStr(line[1:])
                 g_func_list.append(func_body)
                 g_cur_func_stack.append(func_body)
-            else:
-                tabNum = getTabNum(line)
-                if line[tabNum] == '-':
-                    if g_tab_stack[-1] < tabNum:
-                        g_tab_stack.append(tabNum)
-                        g_cur_func_stack.append(g_cur_func_stack[-1].func_list[-1])
-                        while lineNum < len(lines):
-                            item = line[tabNum+1:].split(':')
-                            if len(item) == 1:
-                                item = line[tabNum+1:].split('：')
-                            name = item[0].strip(' \n\t')
-                            if len(item) > 1:
-                                annotate = item[1].strip(' \n\t')
-                            else:
-                                annotate = ''
-                            func_body = FuncBody(name=name, annotate=annotate)
-                            g_cur_func_stack[-1].func_list.append(func_body)
-                            
-                            lineNum += 1
-                            if lineNum >= len(lines):
-                                break
-                            line = lines[lineNum]
-                            tabNum = getTabNum(line)
-                            if g_tab_stack[-1] > tabNum:
-                                lineNum -= 1
-                                break
-                        g_tab_stack.pop()
-                        g_cur_func_stack.pop()
-                    else:
-                        item = line[tabNum+1:].split(':')
-                        if len(item) == 1:
-                            item = line[1:].split('：')
-                        name = item[0].strip(' \n\t')
-                        if len(item) > 1:
-                            annotate = item[1].strip(' \n\t')
+                lineNum += 1
+            else:                
+                def procssChild(lineNum):
+                    nonlocal lines
+                    line = lines[lineNum]                    
+                    tabNum = getTabNum(line)
+                    # print(line.strip('\n'), tabNum)
+                    if line[tabNum] == '-':
+                        if g_tab_stack[-1] < tabNum:  # begin of child
+                            g_tab_stack.append(tabNum)
+                            g_cur_func_stack.append(g_cur_func_stack[-1].func_list[-1])
+                            lineNum = procssChild(lineNum)
+                        elif g_tab_stack[-1] > tabNum:  # end of child
+                            for i in range(g_tab_stack[-1] - tabNum):
+                                g_tab_stack.pop()
+                                g_cur_func_stack.pop()
                         else:
-                            annotate = ''
-                        func_body = FuncBody(name=name, annotate=annotate)
-                        g_cur_func_stack[-1].func_list.append(func_body)
-            lineNum += 1
+                            func_body = getFuncBodyFromStr(line[tabNum+1:])
+                            g_cur_func_stack[-1].func_list.append(func_body)
+                            lineNum += 1
+                    return lineNum
+                lineNum = procssChild(lineNum)
 
     # printFuncList()
         
-    dot_node_str = ''
-    func_list = [g_func_list[0]]
-    while len(func_list) > 0:
-        funcBody = func_list[0]
-        func_list = func_list[1:]
-        dot_node_str += generateNode(funcBody)
-        for func in funcBody.func_list:
-            if len(func.func_list) > 0:
-                func_list.append(func)
-    print(dot_node_str)
+    dot_node_str = genDotStrFromFuncList(generateDotNode)
+    # print(dot_node_str)
 
-    dot_edge_str = ''
-    func_list = [g_func_list[0]]
-    while len(func_list) > 0:
-        funcBody = func_list[0]
-        func_list = func_list[1:]
-        dot_edge_str += generateEdge(funcBody)
-        for func in funcBody.func_list:
-            if len(func.func_list) > 0:
-                func_list.append(func)
-    print(dot_edge_str)
+    dot_edge_str = genDotStrFromFuncList(generateDotEdge)
+    # print(dot_edge_str)
 
-    with codecs.open(dot_file_name, 'w+', 'utf-8') as f:
-        f.writelines(dot_template % (g_func_list[0].name, dot_node_str, dot_edge_str))
+    with codecs.open(g_dot_file_name, 'w+', 'utf-8') as f:
+        f.writelines(g_dot_template % (g_func_list[0].name, dot_node_str, dot_edge_str))
+    dot_cmd = 'dot -Tjpg %s -o %s' % (g_dot_file_name, g_output_file_name)
+    # print(dot_cmd)
     os.system(dot_cmd)
                     
+
+def usage():
+    print('python genDotFromMarkdown file.md')
+    os.exit(0)
 
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        os.exit(0)
-    input_file_name = sys.argv[1]
-    dot_file_name = input_file_name.split('.')[0]+'.dot'
-    output_file_name = input_file_name.split('.')[0]+'.jpg'
-    main()
+        usage()
+    g_input_file_name = sys.argv[1]
+    g_dot_file_name = g_input_file_name.split('.')[0]+'.dot'
+    g_output_file_name = g_input_file_name.split('.')[0]+'.jpg'
+    genDotFromMarkdown()

@@ -4,11 +4,12 @@ digraph G {
 	edge [fontname="Microsoft YaHei"]
 	node [shape=record, fontname="Microsoft YaHei"]	
     main
-		subgraph cluster_main {
+	subgraph cluster_main {
 		label=main
 		func1;
 		func2;
 		func3;
+		funcCommon__2;
 	}
 	subgraph cluster_func1 {
 		label=func1
@@ -22,10 +23,32 @@ digraph G {
 		label=func3
 		func33;
 	}
+	subgraph cluster_funcCommon__2 {
+		label=funcCommon__2
+		func11__1;
+	}
+	subgraph cluster_func11 {
+		label=func11
+		funcCommon;
+		func111;
+	}
+	subgraph cluster_func22 {
+		label=func22
+		funcCommon__1;
+		func222;
+	}
+	subgraph cluster_func33 {
+		label=func33
+		func333;
+	}
 	
-    	main -> func1 [label="mainFunc"]
+	main -> func1 [label="mainFunc"]
 	func1 -> func11 [label="func1"]
 	func2 -> func22 [label="func2"]
 	func3 -> func33 [label="func3"]
+	funcCommon__2 -> func11__1 [label=""]
+	func11 -> funcCommon [label=""]
+	func22 -> funcCommon__1 [label=""]
+	func33 -> func333 [label=""]
 
 }
