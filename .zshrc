@@ -2,23 +2,9 @@ plugins=(
   git zsh-autosuggestions zsh-syntax-highlighting auto-jump
 )
 
-export PATH=$PATH:/usr/local/go/bin
+export GO111MODULE=on
+export GOPROXY=https://goproxy.io
 export GOPATH="$HOME/go"
-
-bright() {
-  if [ ! -n "$1" ];then
-    cat << HELP
-      usage: bright N(default)
-        N   0-15
-HELP
-    return -1
-  fi
-  if [ "$1" = "default" ];then
-  	echo "echo 13 > /sys/class/backlight/acpi_video0/brightness"
-  else
-    echo "echo $1 > /sys/class/backlight/acpi_video0/brightness"
-  fi
-}
 
 function rem {
   for b in "$@"
