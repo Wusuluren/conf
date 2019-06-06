@@ -39,6 +39,8 @@ alias grep-dir="find .|xargs grep -ri"
 alias grep-dir2="fd -E vendor -E node_modules .|xargs grep -ri"
 alias emulator1="emulator -avd $1 -dns-server $(cat /etc/resolv.conf | awk  '/^nameserver/ {print $2}')"
 alias go-proxy='http_proxy=127.0.0.1:1080 https_proxy=127.0.0.1:1080 go'
+alias go2='export GO111MODULE=on && go'
 alias man2='tldr'
 alias redis-local="redis-cli -a toor"
 alias mycli-local="mycli -u root -p toor"
+alias ftp-server='python -m SimpleHTTPServer $((8000+$RANDOM))'
