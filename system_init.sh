@@ -43,6 +43,8 @@ if [ ! -e "$home/.oh-my-zsh" ];then
 	run_sudo cp /etc/passwd "$sys_bak"
 	run_sudo sed -i '$s/bin\/bash/usr\/bin\/zsh/g' /etc/passwd
 fi
+git clone git://github.com/zsh-users/zsh-autosuggestions $ZSH_CUSTOM/plugins/zsh-autosuggestions
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
 
 # git
 git config --global user.name wusuluren
