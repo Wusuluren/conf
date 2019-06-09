@@ -20,6 +20,9 @@ function wc2() {
 function wc3() {
 fd -E vendor .go |xargs wc -l
 }
+function local_ip() {
+ifconfig en0 | grep inet | grep -v inet6 | awk '{print($2)}'
+}
 
 alias grep-dir="find .|xargs grep -ri"
 alias grep-dir2="fd -E vendor -E node_modules .|xargs grep -ri"
@@ -29,4 +32,4 @@ alias go2='export GO111MODULE=on && go'
 alias man2='tldr'
 alias redis-local="redis-cli -a toor"
 alias mycli-local="mycli -u root -p toor"
-alias ftp-server='python -m SimpleHTTPServer $((8000+$RANDOM))'
+alias ftp-server='local_ip && python -m SimpleHTTPServer $((8000+$RANDOM))'
